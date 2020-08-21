@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>C10TV</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+</head>
+<body>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet" /> 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" rel="stylesheet" />
+<style>
+	body{
+		background-color: #101010;
+		padding: 5px;
+		font-family: 'Ubuntu', sans-serif;
+	}
+	td{
+		text-align: center;
+		width: 30px;
+		height: 60px;
+		font-size: 16px;
+		font-weight: bold;
+	}
+	.large{
+		font-size: 50px;
+	}
+	.lg{
+		background-color: rgba(199, 8, 81, 0.25);
+		border: 2px solid white;
+		color: white;
+	}
+	.denon{
+		background-color:  rgb(75, 75, 75);
+		border: 2px solid white;
+		color: white;
+	}
+	.spacer{
+		height: 5px;
+	}
+	.denon_logo{
+		height: 1.25em;
+	}
+	.lg_logo{
+		height: 1.25em;
+	}
+	#status{
+		position: absolute;
+		bottom: 0px;
+		color: grey;
+		text-align: center;
+		width: 100%;
+		left: 0px;
+	}
+</style>
+<center>
+<table>
+	<tr>
+		<td onclick="sendCommand(this,'denon_power_off');"    colspan="2" class="denon"><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Denon_Logo.svg/957px-Denon_Logo.svg.png' class="denon_logo"/><br />OFF</td>
+		<td onclick="sendCommand(this,'denon_power_on')"      colspan="2" class="denon"><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Denon_Logo.svg/957px-Denon_Logo.svg.png' class="denon_logo"/><br />ON</td>
+		<td onclick="sendCommand(this,'lg_power')"            colspan="2" class="lg"><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_of_the_LG_Corporation_%281995-2008%29.svg/800px-Logo_of_the_LG_Corporation_%281995-2008%29.svg.png' class="lg_logo"/><br /><i class="fas fa-power-off"></i></td>
+	</tr>
+	<tr>
+		<td onclick="sendCommand(this,'denon_input_digital')" colspan="2" class="denon"><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Denon_Logo.svg/957px-Denon_Logo.svg.png' class="denon_logo"/><br />DIGITAL</td>
+		<td onclick="sendCommand(this,'lg_input_ps4')"        colspan="2" class="lg"><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_of_the_LG_Corporation_%281995-2008%29.svg/800px-Logo_of_the_LG_Corporation_%281995-2008%29.svg.png' class="lg_logo"/><br />PS4</td>
+		<td onclick="sendCommand(this,'lg_input_netflix')"    colspan="2" class="lg"><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_of_the_LG_Corporation_%281995-2008%29.svg/800px-Logo_of_the_LG_Corporation_%281995-2008%29.svg.png' class="lg_logo"/><br />NETFLIX</td>
+	</tr>
+	<tr>
+		<td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td>
+	</tr>
+	<tr>
+		<td colspan="2"></td>
+		<td onclick="sendCommand(this,'lg_cmd_up')"           colspan="2" class="large lg"><i class="fas fa-arrow-up"></i></td>
+		<td colspan="2"></td>
+	</tr>
+	<tr>
+		<td onclick="sendCommand(this,'lg_cmd_left')"         colspan="2" class="large lg"><i class="fas fa-arrow-left"></i></td>
+		<td onclick="sendCommand(this,'lg_cmd_ok')"           colspan="2" class="large lg"><i class="fas fa-reply"></i></td>
+		<td onclick="sendCommand(this,'lg_cmd_right')"        colspan="2" class="large lg"><i class="fas fa-arrow-right"></i></td>
+	</tr>
+	<tr>
+		<td colspan="2"></td>
+		<td onclick="sendCommand(this,'lg_cmd_down')"         colspan="2" class="large lg"><i class="fas fa-arrow-down"></i></td>
+		<td colspan="2"></td>
+	</tr>
+	<tr>
+		<td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td>
+	<tr>
+		<td onclick="sendCommand(this,'denon_vol_down')"      colspan="3" class="large denon"><i class="fas fa-volume-down"></td>
+		<td onclick="sendCommand(this,'denon_vol_up')"        colspan="3" class="large denon"><i class="fas fa-volume-up"></td>
+	</tr>
+	<tr>
+		<td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td><td class="spacer"></td>
+	</tr>
+	</tr>
+	<tr>
+		<td onclick="sendCommand(this,'denon_vol_mute')"      colspan="3" class="large denon"><i class="fas fa-volume-mute"></td>
+		<td onclick="sendCommand(this,'lg_cmd_pause')"        colspan="3" class="large lg"><i class="fas fa-pause"></td>
+	</tr>
+</table>
+<div id="status">initialized</div>
+</center>
+<script>
+	document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+});
+function sendCommand(x,y){
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "/cmd?cmd="+y);
+	xhr.send(null);
+	document.getElementById("status").innerHTML="<span style='color: yellow'>SENDING...</span>"
+	xhr.onload = function() {
+		document.getElementById("status").innerHTML="<span style='color: green'>OK</span>"
+  };
+}
+</script>
+</body>
+</html>

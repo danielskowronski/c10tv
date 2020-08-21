@@ -1,0 +1,9 @@
+c10tv:
+  port: 9999
+  harmony:
+    path: /home/daniel/.local/bin/aioharmony
+    ip: 192.168.0.111
+    lg_device: "70753752"
+  denon:
+    ip: 192.168.0.161
+    digital_in: 'AUX:Digital In'
