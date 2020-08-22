@@ -1,18 +1,34 @@
 # c10tv
 
+WebUI to control LG TV (webOS) and DENON Amplituner combo from smartphone.
+
+![screenshot](demo.png)
+
 ## setup
 
-### install stuff
 ```
 pip3 install -r requirements.txt
 ```
 
-### gather variables
-
+### example systemd service file
 ```
-aioharmony --harmony_ip 192.168.0.111 show_detailed_config 
+[Unit]
+Description=C10TV
+After=syslog.target
+After=network.target
+
+[Service]
+RestartSec=5s
+Type=simple
+User=www
+WorkingDirectory=/opt/c10tv/
+ExecStart=/usr/bin/python3 /opt/c10tv/c10tv.py
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
 ```
 
+### `.pylgtv`
 
-## pack
-`zip c10tv.zip c10tv.py  config.yml  index.html requirements.txt`
+pylgtv library requests permission from TV user to be paired - it only needs to be done once, but some secrets are saved in current workign directory of app as `.pylgtv` so make sure it's writable by user running python.

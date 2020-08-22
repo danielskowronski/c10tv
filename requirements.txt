@@ -4,3 +4,4 @@ beaker
 pylgtv
 denonavr
 wakeonlan
+websocket
