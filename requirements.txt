@@ -1,5 +1,6 @@
 pyyaml
 TurboGears2
 beaker
-aioharmony
+pylgtv
 denonavr
+wakeonlan

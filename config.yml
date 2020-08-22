@@ -1,9 +1,10 @@
 c10tv:
   port: 9999
-  harmony:
-    path: /home/daniel/.local/bin/aioharmony
-    ip: 192.168.0.111
-    lg_device: "70753752"
   denon:
     ip: 192.168.0.161
     digital_in: 'AUX:Digital In'
+  lg:
+    ip: 192.168.0.207
+    mac: e0-51-63-a8-9a-af
+    netflix: 'netflix'
+    ps4: 'HDMI_3'

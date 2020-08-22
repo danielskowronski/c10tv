@@ -1,10 +1,14 @@
 #!/usr/bin/python3
 
-import yaml,json,urllib,random,sys,denonavr,os
+import yaml,json,urllib,random,sys,denonavr,os,logging,websocket
+from pylgtv import WebOsClient
 from wsgiref.simple_server import make_server
+from wakeonlan import send_magic_packet
 from tg import MinimalApplicationConfigurator,expose,TGController,session,request
 from tg.configurator.components.session import SessionConfigurationComponent
+from tg.configurator.components.statics import StaticsConfigurationComponent
 
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 class RootController(TGController):
 	@expose(content_type='text/html')
@@ -37,30 +41,38 @@ class RootController(TGController):
 
 
 		elif "lg" in cmd:
-			if cmd=="lg_cmd_down":
-				cmd="DirectionDown"
-			elif cmd=="lg_cmd_up":
-				cmd="DirectionUp"
-			elif cmd=="lg_cmd_left":
-				cmd="DirectionLeft"
-			elif cmd=="lg_cmd_right":
-				cmd="DirectionRight"
-			elif cmd=="lg_cmd_ok":
-				cmd="Select"
+			w = WebOsClient(app_cfg['lg']['ip'])
+			w.register()
+
+			if "lg_arr_" in cmd:
+				w.request("com.webos.service.networkinput/getPointerInputSocket")
+				ws = websocket.WebSocket()
+				ws.connect(w.last_response['payload']['socketPath'])
+				if cmd=="lg_arr_down":
+					ws.send('type:button\nname:DOWN\n\n')
+				elif cmd=="lg_arr_up":
+					ws.send('type:button\nname:UP\n\n')
+				elif cmd=="lg_arr_left":
+					ws.send('type:button\nname:LEFT\n\n')
+				elif cmd=="lg_arr_right":
+					ws.send('type:button\nname:RIGHT\n\n')
+				elif cmd=="lg_arr_ok":
+					ws.send('type:button\nname:ENTER\n\n')
+				elif cmd=="lg_arr_back":
+					ws.send('type:button\nname:BACK\n\n')
 			elif cmd=="lg_cmd_pause":
-				cmd="Pause"
+				w.pause()
 			elif cmd=="lg_input_netflix":
-				cmd="netflix"
+				w.launch_app(app_cfg['lg']['netflix'])
 			elif cmd=="lg_input_ps4":
-				cmd="InputHdmi3"
-			elif cmd=="lg_power":
-				cmd="PowerToggle"
+				w.set_input(app_cfg['lg']['ps4'])
+			elif cmd=="lg_power_on":
+				send_magic_packet(app_cfg['lg']['mac'])
+			elif cmd=="lg_power_off":
+				w.power_off()
 			else:
 				return '{"response":"invalid_cmd"}'
 			
-			oscmd=app_cfg['harmony']['path']+" --protocol WEBSOCKETS --harmony_ip "+app_cfg['harmony']['ip']+" send_command --device_id "+app_cfg['harmony']['lg_device']+" --command "+cmd
-			print("EXEC: "+oscmd)
-			os.system(oscmd)
 			return '{"response":"ok"}'
 
 		else:
@@ -69,10 +81,17 @@ class RootController(TGController):
 
 
 config = MinimalApplicationConfigurator()
+config.register(StaticsConfigurationComponent)
 config.update_blueprint({
-	'root_controller': RootController()
+	'root_controller': RootController(),
+	'serve_static': True,
+	'paths': {
+		'static_files': 'static'
+	}
 })
 config.register(SessionConfigurationComponent)
+config.serve_static = True
+#config.paths['static_files'] = 'static'
 stream = open('config.yml', 'r')
 app_cfg = yaml.load(stream)['c10tv']
 print('Serving on port '+str(app_cfg['port'])+'...')
